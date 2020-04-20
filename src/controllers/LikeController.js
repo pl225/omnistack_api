@@ -15,7 +15,16 @@ module.exports = {
             if (!targedDev) {
                 return res.status(404).json({ mensagem: "Dev não existe" });
             } else if (targedDev.likes.includes(loggedDev._id)) {
-                console.log('Match!');
+                const loggedSocket = req.connectedUsers[user];
+                const targetSocket = req.connectedUsers[devId];
+
+                if (loggedSocket) {
+                    req.io.to(loggedSocket).emit('match', targedDev);
+                }
+
+                if (targetSocket) {
+                    req.io.to(targetSocket).emit('match', loggedDev);
+                }
             }
 
             loggedDev.likes.push(targedDev._id);
